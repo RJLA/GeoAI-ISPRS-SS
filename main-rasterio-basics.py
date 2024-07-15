@@ -1,5 +1,5 @@
 # %%
-from geoai.raster_df_ops.RasterOps import RasterOperations
+from geoai.geotools.RasterOps import RasterOperations
 
 # %%
 # SET RASTER PATH, INSTANTIATE CLASS
