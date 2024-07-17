@@ -32,15 +32,15 @@ class RasterOperations:
         - 'driver': The format of the file (e.g., 'GTiff' for GeoTIFF).
         - 'dtype': The data type of the raster's pixels (e.g., 'float32').
         - 'nodata': The value used to represent missing data
-           (e.g., None if no specific nodata value is set).
+                    (e.g., None if no specific nodata value is set).
         - 'width': The number of columns in the raster.
         - 'height': The number of rows in the raster.
         - 'count': The number of bands in the raster.
-        - 'crs': The Coordinate Reference System (CRS) of the raster,
-           defined by an EPSG code (e.g., CRS.from_epsg(4326) for WGS84).
+        - 'crs': The Coordinate Reference System (CRS) of the raster, defined by an EPSG code
+                 (e.g., CRS.from_epsg(4326) for WGS84).
         - 'transform': An Affine transformation that defines the raster's georeferencing
-           (i.e., how pixel coordinates are mapped to geographic coordinates).
-           The parameters are coefficients of the affine transformation.
+                       (i.e., how pixel coordinates are mapped to geographic coordinates).
+                       The parameters are coefficients of the affine transformation.
         """
         with rasterio.open(file_path) as src:
             metadata = src.meta
