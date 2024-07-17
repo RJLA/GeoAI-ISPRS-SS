@@ -5,10 +5,23 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-class DFOperations:
+class VisualizeOperations:
     """
-    A class that provides operations for converting
-    raster arrays to pandas DataFrames.
+    A class that provides various visualization operations for data analysis.
+
+    Attributes:
+        figure_size (tuple): The size of the figure for plotting.
+
+    Methods:
+        finalize_plot(): Adjusts the layout to be tight and displays the plot.
+        generate_profile_report(df, title): Generates a profile report from a DataFrame and displays it as an iframe in a Notebook.
+        plot_dual_scatter(df, x, y, hue): Create a scatter plot of two variables in a DataFrame.
+        make_pairplot(df, hue): Create a pair plot to visualize the relationships between variables in a DataFrame.
+        make_box_plot(df, title): Generate a box plot of values.
+        make_3d_scatter(df, x, y, z, class_name): Create a 3D scatter plot using the specified DataFrame and column names.
+        make_heatmap(df, title): Generate a heatmap of the correlation matrix for the given DataFrame.
+        plot_row(row, class_label, title_prefix): Generate a line plot for the provided row with the DataFrame's column names as the x-axis.
+        plot_spectral(df, grouping_column): Plots the spectral signature by class for a given DataFrame.
     """
 
     figure_size = (12, 8)
@@ -20,21 +33,6 @@ class DFOperations:
         """
         plt.tight_layout()
         plt.show()
-
-    def convert_to_df(self, array: np.ndarray, column_name: str) -> pd.DataFrame:
-        """
-        Convert a raster array to a pandas DataFrame
-
-        Args:
-            array (np.np.ndarray): The input raster array to be converted.
-            column_name (str): The name to be used for the DataFrame's column.
-
-        Returns:
-            df (DataFrame): The DataFrame containing the raster data.
-        """
-        print(f"Converting raster array to DataFrame with column name {column_name}")
-        df = pd.DataFrame(array, columns=[column_name])
-        return df
 
     def generate_profile_report(
         self, df: pd.DataFrame, title="DataProfileReport"
@@ -56,20 +54,7 @@ class DFOperations:
         profile.to_notebook_iframe()
         profile.to_file(f"eda_reports/{title}.html")
 
-    def remove_duplicate_rows(self, df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Removes duplicate rows from a DataFrame.
-
-        Args:
-            df (pd.DataFrame): The DataFrame from which to remove
-            duplicates.
-
-        Returns:
-            pd.DataFrame: A DataFrame with duplicate rows removed.
-        """
-        return df.drop_duplicates()
-
-    def plot_dual_scatter(self, df: pd.DataFrame, x: str, y: str) -> None:
+    def plot_dual_scatter(self, df: pd.DataFrame, x: str, y: str, hue: str) -> None:
         """
         Create a scatter plot of two variables in a DataFrame.
 
@@ -77,12 +62,14 @@ class DFOperations:
             df (pd.DataFrame): The DataFrame containing the data.
             x (str): The name of the column representing the x-axis variable.
             y (str): The name of the column representing the y-axis variable.
+            hue (str): The column name in the DataFrame to be used for
+                       coloring the plot.
 
         Returns:
             None
         """
         plt.figure(figsize=self.figure_size)
-        sns.scatterplot(data=df, x=x, y=y, hue="Class")
+        sns.scatterplot(data=df, x=x, y=y, hue=hue)
         plt.title("Scatter Plot of NDVI vs NIR")
         self.finalize_plot()
         return None
@@ -195,7 +182,7 @@ class DFOperations:
         plt.xticks(rotation=45)
         self.finalize_plot()
 
-    def plot_spectral(self, df: pd.DataFrame) -> None:
+    def plot_spectral(self, df: pd.DataFrame, grouping_column: str) -> None:
         """
         Plots the spectral signature by class for a given DataFrame.
 
@@ -205,7 +192,7 @@ class DFOperations:
         Returns:
             None
         """
-        grouped = df.groupby("Class")
+        grouped = df.groupby(grouping_column)
 
         plt.figure(figsize=self.figure_size)
 

@@ -1,2 +1,3 @@
 geoai-env/
 *.pyc
+*.tif.aux.xml
