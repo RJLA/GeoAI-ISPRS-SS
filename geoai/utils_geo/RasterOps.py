@@ -2,6 +2,7 @@ import logging
 from typing import AnyStr
 
 import numpy as np
+from pandas import DataFrame
 import rasterio
 import matplotlib.pyplot as plt
 
@@ -178,3 +179,66 @@ class RasterOperations:
         metadata["count"] = updated_array.shape[0]
 
         return updated_array
+
+    def column_to_raster(
+        self,
+        output_path: AnyStr,
+        dataframe: DataFrame,
+        band_name: str,
+        metadata: tuple,
+        dtype="float32",
+    ):
+        """
+        Writes a single-band raster to the specified output path.
+
+        Args:
+            output_path (str): the path to the output raster file.
+            dataframe (DataFrame): the DataFrame containing the column to write.
+            band_name (str): the name of the column in the DataFrame to write.
+            metadata (tuple): containing (height, width, CRS, Affine transform).
+            dtype (str): the data type of the output raster.
+        """
+        height, width, crs, transform = metadata
+        # Extract the band data from the DataFrame and reshape it to 2D
+        band = dataframe[band_name].values.reshape(height, width)
+
+        # Write the band to the output raster file
+        with rasterio.open(
+            output_path,
+            "w",
+            driver="GTiff",
+            height=height,
+            width=width,
+            count=1,
+            dtype=dtype,
+            crs=crs,
+            transform=transform,
+            compress="lzw",
+        ) as dst:
+            dst.write(band, 1)
+            dst.close()
+        print(f"Raster written to {output_path}")
+
+    def get_raster_dimensions(self, file_path: AnyStr):
+        """
+        Get the dimensions of a raster file
+
+        Args:
+            file_path (AnyStr): path to the raster file
+
+        Returns:
+            original_height (int): height of the raster file
+            original_width (int): width of the raster file
+            original_crs (CRS): crs of the raster file
+            original_transform (Affine): affine transformation
+            of the raster file
+
+        """
+        with rasterio.open(file_path) as src:
+            original_height = src.height
+            original_width = src.width
+            original_crs = src.crs
+            original_transform = src.transform
+            src.close()
+
+        return original_height, original_width, original_crs, original_transform

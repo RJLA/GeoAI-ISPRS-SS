@@ -1,8 +1,10 @@
+from sklearn.metrics import confusion_matrix
 from ydata_profiling import ProfileReport
 import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
 
 
 class VisualizeOperations:
@@ -213,3 +215,35 @@ class VisualizeOperations:
         plt.xticks(rotation=45)
         plt.legend()
         self.finalize_plot()
+
+    def plot_confusion_matrix(
+            self,
+        true_labels: list | np.ndarray,
+        predicted_labels: list | np.ndarray,
+        class_names: list | np.ndarray,
+    ):
+        """
+        Plots a confusion matrix using matplotlib and seaborn.
+
+        Args:
+            true_labels (list or array): True labels of the data.
+            predicted_labels (list or array): Predicted labels of the data.
+            class_names (list of str, optional): Names of the classes for labeling the axes. Defaults to None.
+        """
+        cm = confusion_matrix(true_labels, predicted_labels)
+        plt.figure(figsize=self.figure_size)
+        sns.heatmap(
+            cm,
+            annot=True,
+            fmt="d",
+            cmap="Blues",
+            cbar=False,
+            xticklabels=class_names if class_names else "auto",
+            yticklabels=class_names if class_names else "auto",
+        )
+        plt.xlabel("Predicted labels")
+        plt.ylabel("True labels")
+        plt.title("Confusion Matrix")
+        plt.show()
+        self.finalize_plot()
+    
