@@ -90,7 +90,7 @@ class DataFrameOperations:
         X_train: pd.DataFrame,
         X_val: pd.DataFrame = None,
         X_test: pd.DataFrame = None,
-        columns: list = None,
+        numerical_columns: list = None,
         degree: int = 2,
     ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """
@@ -100,14 +100,14 @@ class DataFrameOperations:
             X_train (pd.DataFrame): Training DataFrame to be transformed.
             X_val (pd.DataFrame, optional): Validation DataFrame to be transformed.
             X_test (pd.DataFrame, optional): Test DataFrame to be transformed.
-            columns (list): List of column names to transform.
+            numerical_columns (list): List of numerical_columns names to transform.
             degree (int): Degree of the polynomial transformation.
 
         Returns:
             tuple: Transformed DataFrames (X_train, X_val, X_test) with
                    original and polynomial transformed columns.
         """
-        if not columns or degree < 1:
+        if not numerical_columns or degree < 1:
             raise ValueError(
                 "Columns list cannot be empty and degree must be at least 1."
             )
@@ -125,12 +125,15 @@ class DataFrameOperations:
             transformed_df = pd.DataFrame(
                 transformed, columns=new_feature_names, index=X.index
             )
-            return pd.concat([X, transformed_df], axis=1)
+
+            X_excluded = X.drop(columns=columns)
+
+            return pd.concat([X_excluded, transformed_df], axis=1)
 
         poly = PolynomialFeatures(degree=degree, include_bias=False)
-        X_train_transformed = transform_df(X_train, poly, columns, fit=True)
-        X_val_transformed = transform_df(X_val, poly, columns)
-        X_test_transformed = transform_df(X_test, poly, columns)
+        X_train_transformed = transform_df(X_train, poly, numerical_columns, fit=True)
+        X_val_transformed = transform_df(X_val, poly, numerical_columns)
+        X_test_transformed = transform_df(X_test, poly, numerical_columns)
 
         return X_train_transformed, X_val_transformed, X_test_transformed
 
@@ -168,10 +171,10 @@ class DataFrameOperations:
             X = pd.concat([X.drop(columns=[target_column]), encoded_df], axis=1)
             return X
 
-        encoder = OneHotEncoder(dtype=int, sparse=False)
+        encoder = OneHotEncoder(dtype=int)
         X_train_encoded = encode_df(X_train, encoder, fit=True)
-        X_val_encoded = encode_df(X_val, encoder) if X_val is not None else None
-        X_test_encoded = encode_df(X_test, encoder) if X_test is not None else None
+        X_val_encoded = encode_df(X_val, encoder)
+        X_test_encoded = encode_df(X_test, encoder)
 
         return X_train_encoded, X_val_encoded, X_test_encoded
 
@@ -181,7 +184,7 @@ class DataFrameOperations:
         X_val: pd.DataFrame,
         X_test: pd.DataFrame,
         target_column: str,
-        categories: list[list],
+        categories,
     ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """
         Apply ordinal encoding to the target column in the given DataFrames.
@@ -197,7 +200,7 @@ class DataFrameOperations:
             tuple: A tuple containing the modified training,
             validation, and test DataFrames.
         """
-        encoder = OrdinalEncoder(categories=categories)
+        encoder = OrdinalEncoder(categories=categories, dtype=int)
         X_train[f"{target_column}_encoded"] = encoder.fit_transform(
             X_train[[target_column]]
         )
@@ -233,6 +236,9 @@ class DataFrameOperations:
         y_test_encoded = pd.Series(
             le.transform(y_test), index=y_test.index, name=y_test.name
         )
+        label_mapping = dict(zip(le.classes_, le.transform(le.classes_)))
+        print(label_mapping)
+
         return y_train_encoded, y_val_encoded, y_test_encoded
 
     def binarize_or_discretize(
@@ -260,22 +266,17 @@ class DataFrameOperations:
         Returns:
             tuple: A tuple containing the modified training, validation, and test DataFrames.
         """
-        if len(bin_edges) != len(bin_labels) + 1:
-            raise ValueError(
-                "Number of bin edges must be one more than the number of bin labels."
+
+        def discretize(df):
+            column_data = df[input_column].values
+            df[output_column] = pd.cut(
+                column_data, bins=bin_edges, labels=bin_labels, include_lowest=True
             )
-        X_train[output_column] = pd.cut(
-            X_train[input_column],
-            bins=bin_edges,
-            labels=bin_labels,
-            include_lowest=True,
-        )
-        X_val[output_column] = pd.cut(
-            X_val[input_column], bins=bin_edges, labels=bin_labels, include_lowest=True
-        )
-        X_test[output_column] = pd.cut(
-            X_test[input_column], bins=bin_edges, labels=bin_labels, include_lowest=True
-        )
+            return df
+
+        X_train = discretize(X_train)
+        X_val = discretize(X_val)
+        X_test = discretize(X_test)
 
         return X_train, X_val, X_test
 

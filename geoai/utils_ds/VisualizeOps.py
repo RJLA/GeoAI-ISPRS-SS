@@ -217,7 +217,7 @@ class VisualizeOperations:
         self.finalize_plot()
 
     def plot_confusion_matrix(
-            self,
+        self,
         true_labels: list | np.ndarray,
         predicted_labels: list | np.ndarray,
         class_names: list | np.ndarray,
@@ -238,12 +238,19 @@ class VisualizeOperations:
             fmt="d",
             cmap="Blues",
             cbar=False,
-            xticklabels=class_names if class_names else "auto",
-            yticklabels=class_names if class_names else "auto",
+            xticklabels=(
+                class_names
+                if class_names is not None and len(class_names) > 0
+                else "auto"
+            ),
+            yticklabels=(
+                class_names
+                if class_names is not None and len(class_names) > 0
+                else "auto"
+            ),
         )
         plt.xlabel("Predicted labels")
         plt.ylabel("True labels")
         plt.title("Confusion Matrix")
         plt.show()
         self.finalize_plot()
-    
