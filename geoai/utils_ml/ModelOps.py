@@ -231,16 +231,18 @@ class ModelOperations:
             Tuple[dict, float]: A tuple containing the best hyperparameters
             and the best score obtained.
         """
-        grid_search = RandomizedSearchCV(
+        random_search = RandomizedSearchCV(
             estimator=model,
             param_distributions=param_grid,
             scoring=accuracy,
             cv=10,
             refit=True,
             n_jobs=-1,
+            n_iter=20,
+            random_state=1,
         )
-        grid_search.fit(X_train, y_train)
-        best_params = grid_search.best_params_
-        best_score = grid_search.best_score_
+        random_search.fit(X_train, y_train)
+        best_params = random_search.best_params_
+        best_score = random_search.best_score_
 
         return best_params, best_score

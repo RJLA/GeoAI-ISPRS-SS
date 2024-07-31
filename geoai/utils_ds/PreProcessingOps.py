@@ -57,14 +57,6 @@ class PreProcessingOperations:
         cum_var_exp = np.cumsum(var_exp)
         return var_exp, cum_var_exp
 
-        # cov_mat = np.cov(X_train.T)
-        # eigen_vals = np.linalg.eig(cov_mat)
-        # tot = sum(eigen_vals)
-        # var_exp = [(i / tot) for i in sorted(eigen_vals, reverse=True)]
-        # cum_var_exp = np.cumsum(var_exp)
-
-        # return var_exp, cum_var_exp
-
     def compute_discriminability_ratios(
         self, X_train: pd.DataFrame, y_train: pd.DataFrame
     ) -> Tuple[np.ndarray, np.ndarray]:
