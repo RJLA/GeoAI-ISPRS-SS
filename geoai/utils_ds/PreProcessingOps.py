@@ -224,7 +224,7 @@ class PreProcessingOperations:
             X = pd.concat([X.drop(columns=[target_column]), encoded_df], axis=1)
             return X
 
-        encoder = OneHotEncoder(dtype=int)
+        encoder = OneHotEncoder(dtype=int, sparse_output=False)
         X_train_encoded = encode_df(X_train, encoder, fit=True)
         X_test_encoded = encode_df(X_test, encoder)
 

@@ -1,3 +1,9 @@
 geoai-env/
 *.pyc
 *.tif.aux.xml
+catboost_info/
+__pycache__/
+*.log
+*.log.*
+*.log-*
+*.tif

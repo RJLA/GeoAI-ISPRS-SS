@@ -1,4 +1,14 @@
 import pandas as pd
+from sklearn.compose import ColumnTransformer
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.feature_selection import SelectKBest
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import (
+    MinMaxScaler,
+    OneHotEncoder,
+    OrdinalEncoder,
+    PolynomialFeatures,
+)
 import xgboost as xgb
 import numpy as np
 from typing import Tuple
@@ -246,3 +256,55 @@ class ModelOperations:
         best_score = random_search.best_score_
 
         return best_params, best_score
+
+    def make_pipeline(self, classifier) -> Pipeline:
+        """
+        Create a pipeline for the given classifier.
+
+        Args:
+            classifier: The machine learning classifier to use.
+
+        Returns:
+            Pipeline: The machine learning pipeline.
+        """
+
+        numerical_columns = [
+            "BLUE",
+            "GREEN",
+            "RED",
+            "NIR",
+            "SWIR",
+            "NDVI",
+            "NDBI",
+            "REI",
+        ]
+        one_hot_encoder_columns = ["NDVI_bin"]
+        ordinal_encoder_columns = ["NDVI_dis"]
+        categories = [["low_veg", "medium_veg", "high_veg"]]
+
+        numerical_transformer = Pipeline(
+            steps=[
+                ("poly", PolynomialFeatures(degree=2)),
+                ("select", SelectKBest(k=24)),
+            ]
+        )
+        one_hot_transformer = OneHotEncoder(dtype=int, sparse_output=False)
+        ordinal_transformer = OrdinalEncoder(categories=categories, dtype=int)
+        preprocessor = ColumnTransformer(
+            transformers=[
+                ("num", numerical_transformer, numerical_columns),
+                ("onehot", one_hot_transformer, one_hot_encoder_columns),
+                ("ordinal", ordinal_transformer, ordinal_encoder_columns),
+            ],
+            remainder="drop",
+        )
+        pipeline = Pipeline(
+            steps=[
+                ("preprocessor", preprocessor),
+                ("scale", MinMaxScaler()),
+                ("dim_reduce", LinearDiscriminantAnalysis(n_components=3)),
+                ("classifier", classifier),
+            ]
+        )
+
+        return pipeline
