@@ -2,6 +2,7 @@ import logging
 from typing import AnyStr
 
 import numpy as np
+import pandas as pd
 import rasterio
 import matplotlib.pyplot as plt
 
@@ -178,3 +179,164 @@ class RasterOperations:
         metadata["count"] = updated_array.shape[0]
 
         return updated_array
+
+    def column_to_raster(
+        self,
+        output_path: AnyStr,
+        dataframe: pd.DataFrame,
+        band_name: str,
+        metadata: tuple,
+        dtype="float32",
+    ):
+        """
+        Writes a single-band raster to the specified output path.
+
+        Args:
+            output_path (str): the path to the output raster file.
+            dataframe (DataFrame): the DataFrame containing the column to write.
+            band_name (str): the name of the column in the DataFrame to write.
+            metadata (tuple): containing (height, width, CRS, Affine transform).
+            dtype (str): the data type of the output raster.
+        """
+        height, width, crs, transform = metadata
+        # Extract the band data from the DataFrame and reshape it to 2D
+        band = dataframe[band_name].values.reshape(height, width)
+
+        # Write the band to the output raster file
+        with rasterio.open(
+            output_path,
+            "w",
+            driver="GTiff",
+            height=height,
+            width=width,
+            count=1,
+            dtype=dtype,
+            crs=crs,
+            transform=transform,
+            compress="lzw",
+        ) as dst:
+            dst.write(band, 1)
+            dst.close()
+        print(f"Raster written to {output_path}")
+
+    def get_raster_dimensions(self, file_path: AnyStr):
+        """
+        Get the dimensions of a raster file
+
+        Args:
+            file_path (AnyStr): path to the raster file
+
+        Returns:
+            original_height (int): height of the raster file
+            original_width (int): width of the raster file
+            original_crs (CRS): crs of the raster file
+            original_transform (Affine): affine transformation
+            of the raster file
+
+        """
+        with rasterio.open(file_path) as src:
+            original_height = src.height
+            original_width = src.width
+            original_crs = src.crs
+            original_transform = src.transform
+            src.close()
+
+        return original_height, original_width, original_crs, original_transform
+
+    def compute_ndvi_using_df(
+        self, df: pd.DataFrame, nir_band: str, red_band: str
+    ) -> pd.DataFrame:
+        """
+        Compute the Normalized Difference Vegetation Index (NDVI) from NIR and Red bands.
+
+        Args:
+            df (pd.DataFrame): The DataFrame containing the NIR and Red bands.
+            nir_band (str): The name of the NIR band column.
+            red_band (str): The name of the Red band column.
+
+        Returns:
+            pd.DataFrame: The input DataFrame with an additional 'NDVI' column.
+        """
+        df["NDVI"] = (df[nir_band] - df[red_band]) / (df[nir_band] + df[red_band])
+        return df
+
+    def compute_ndbi(
+        self, df: pd.DataFrame, nir_band: str, swir_band: str
+    ) -> pd.DataFrame:
+        """
+        Compute the Normalized Difference Built-up Index (NDBI) from NIR and SWIR bands.
+
+        Args:
+            df (pd.DataFrame): The DataFrame containing the NIR and SWIR bands.
+            nir_band (str): The name of the NIR band column.
+            swir_band (str): The name of the SWIR band column.
+
+        Returns:
+            pd.DataFrame: The input DataFrame with an additional 'NDBI' column.
+        """
+        df["NDBI"] = (df[swir_band] - df[nir_band]) / (df[swir_band] + df[nir_band])
+        return df
+
+    def compute_rei(self, df: pd.DataFrame, nir_band: str, blue: str) -> pd.DataFrame:
+        """
+        Compute the Road Extraction index (REI) from NIR and BLUE bands.
+
+        Args:
+            df (pd.DataFrame): The DataFrame containing the NIR and SWIR bands.
+            nir_band (str): The name of the NIR band column.
+            blue (str): The name of the BLUE band column.
+
+        Returns:
+            pd.DataFrame: The input DataFrame with an additional 'REI' column.
+        """
+
+        df["REI"] = (df[nir_band] - df[blue]) / (df[nir_band] + df[blue] * df[nir_band])
+        return df
+
+    def create_ndvi_bin(self, df: pd.DataFrame, ndvi_band: str) -> pd.DataFrame:
+        """
+        Create a binary NDVI mask from the NDVI band.
+
+        Args:
+            df (pd.DataFrame): The DataFrame containing the NDVI band.
+            ndvi_band (str): The name of the NDVI band column.
+
+        Returns:
+            pd.DataFrame: The input DataFrame with an additional 'NDVI_bin' column.
+        """
+        ndvi_binary_edges = [-float("inf"), 0.5, float("inf")]
+        ndvi_binary_labels = ["non_veg", "veg"]
+
+        column_data = df[ndvi_band].values
+        df["NDVI_bin"] = pd.cut(
+            column_data,
+            bins=ndvi_binary_edges,
+            labels=ndvi_binary_labels,
+            include_lowest=True,
+        )
+
+        return df
+
+    def create_ndvi_discrete(self, df: pd.DataFrame, ndvi_band: str) -> pd.DataFrame:
+        """
+        Create a categorical NDVI mask from the NDVI band.
+
+        Args:
+            df (pd.DataFrame): The DataFrame containing the NDVI band.
+            ndvi_band (str): The name of the NDVI band column.
+
+        Returns:
+            pd.DataFrame: The input DataFrame with an additional 'NDVI_cat' column.
+        """
+        ndvi_category_edges = [-float("inf"), 0.2, 0.5, float("inf")]
+        ndvi_category_labels = ["low_veg", "medium_veg", "high_veg"]
+
+        column_data = df[ndvi_band].values
+        df["NDVI_dis"] = pd.cut(
+            column_data,
+            bins=ndvi_category_edges,
+            labels=ndvi_category_labels,
+            include_lowest=True,
+        )
+
+        return df
