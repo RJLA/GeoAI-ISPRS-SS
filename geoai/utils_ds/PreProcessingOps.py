@@ -16,7 +16,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 class PreProcessingOperations:
 
     def scale_to_minmax(
-        self, X_train: pd.DataFrame, X_test: pd.DataFrame
+        self, X_train: pd.DataFrame, X_test: pd.DataFrame | None = None
     ) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
         This function scales the data to min-max scale.
@@ -30,12 +30,15 @@ class PreProcessingOperations:
         """
         scaler = MinMaxScaler()
         X_train_scaled = scaler.fit_transform(X_train)
-        X_test_scaled = scaler.transform(X_test)
-
         X_train_scaled = pd.DataFrame(X_train_scaled, columns=X_train.columns)
-        X_test_scaled = pd.DataFrame(X_test_scaled, columns=X_test.columns)
 
-        return X_train_scaled, X_test_scaled
+        if X_test is not None:
+            X_test_scaled = scaler.transform(X_test)
+            X_test_scaled = pd.DataFrame(X_test_scaled, columns=X_test.columns)
+
+            return X_train_scaled, X_test_scaled
+
+        return X_train_scaled
 
     def compute_pca_variance(
         self,
