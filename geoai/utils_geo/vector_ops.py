@@ -1,3 +1,17 @@
+"""
+This module contains functions for vector operations.
+
+Classes:
+    VectorOperations: A class that provides operations for vector data.
+"""
+
+__author__ = "Reginald Jay L. Argamosa"
+__version__ = "0.1.0"
+__email__ = "regi.argamosa@gmail.com"
+__license__ = (
+    "Reginald Jay L. Argamosa Personal Use License: See LICENSE file for details"
+)
+
 import rasterio
 from rasterio.mask import mask
 from shapely.geometry import mapping
@@ -5,17 +19,30 @@ import geopandas as gpd
 
 
 class VectorOperations:
+    """
+    A class that provides operations for vector data.
+
+    Attributes:
+        None
+
+    Methods:
+        clip_raster_with_shapefile: Clips a raster file with a shapefile and saves the output.
+    """
 
     def clip_raster_with_shapefile(
         self, raster_path, shapefile_path, output_raster_path
-    ):
+    ) -> None:
         """
         Clips a raster file with a shapefile and saves the output.
 
-        Parameters:
-        raster_path (str): Path to the input raster file.
-        shapefile_path (str): Path to the shapefile used for clipping.
-        output_raster_path (str): Path where the clipped raster will be saved.
+        Args:
+            raster_path (str): Path to the input raster file.
+            shapefile_path (str): Path to the shapefile used for clipping.
+            output_raster_path (str): Path where the clipped raster will be
+            saved.
+
+        Returns:
+            None
         """
 
         shapes = gpd.read_file(shapefile_path)

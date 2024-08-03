@@ -1,7 +1,38 @@
+"""
+This module contains the ModelOperations class which provides
+functions for selecting features, calculating classification metrics,
+performing stratified k-fold cross-validation, computing metrics for
+learning and validation curves, and finding the best hyperparameters
+for a given model.
+
+Classes:
+    ModelOperations: A class that provides operations for machine learning
+    models.
+"""
+
+__author__ = "Reginald Jay L. Argamosa"
+__version__ = "0.1.0"
+__email__ = "regi.argamosa@gmail.com"
+__license__ = (
+    "Reginald Jay L. Argamosa Personal Use License: See LICENSE file for details"
+)
+
+from typing import Tuple
+
+import numpy as np
 import pandas as pd
+from catboost import CatBoostClassifier
 from sklearn.compose import ColumnTransformer
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.feature_selection import SelectKBest
+from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
+from sklearn.model_selection import (
+    GridSearchCV,
+    RandomizedSearchCV,
+    StratifiedKFold,
+    learning_curve,
+    validation_curve,
+)
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import (
     MinMaxScaler,
@@ -9,28 +40,37 @@ from sklearn.preprocessing import (
     OrdinalEncoder,
     PolynomialFeatures,
 )
-import xgboost as xgb
-import numpy as np
-from typing import Tuple
-
-from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
-from sklearn.model_selection import (
-    GridSearchCV,
-    RandomizedSearchCV,
-    StratifiedKFold,
-    learning_curve,
-)
-from sklearn.model_selection import validation_curve
 
 
 class ModelOperations:
+    """
+    A class that provides operations for machine learning models.
+
+    Attributes:
+        None
+
+    Methods:
+        select_features: Select important features from a dataset using
+        CatBoost.
+        calculate_classification_accuracy: Calculate classification metrics.
+        stratify_k_fold_cv: Perform stratified k-fold cross-validation on a
+        dataset.
+        compute_metrics_for_learning_curve: Compute metrics for a learning
+        curve.
+        compute_metric_for_validation_curve: Compute metrics for a validation
+        curve.
+        find_best_hyperparameters_gs: Find the best hyperparameters using
+        GridSearchCV.
+        find_best_hyperparameters_rs: Find the best hyperparameters using
+        RandomizedSearchCV.
+        make_pipeline: Create a pipeline for a given classifier.
+    """
 
     def select_features(
         self, X_train: pd.DataFrame, y_train: pd.DataFrame
     ) -> Tuple[list, pd.DataFrame]:
         """
-        Selects the important features from the given dataset
-        using Gradient Boosting Classifier.
+        Select important features from a dataset using CatBoost.
 
         Args:
             X_train (pd.DataFrame): The input training dataset.
@@ -41,7 +81,7 @@ class ModelOperations:
             features and their importance.
         """
         X_train["noise_column"] = np.random.rand(len(X_train))
-        model = xgb.XGBClassifier()
+        model = CatBoostClassifier()
         model.fit(X_train, y_train)
         feature_importances = model.feature_importances_
         feature_names = X_train.columns
@@ -81,7 +121,7 @@ class ModelOperations:
         return accuracy, precision, recall, f1
 
     def stratify_k_fold_cv(
-        self, X_train: pd.DataFrame, y_train: pd.Series, n_splits: int, model
+        self, X_train: pd.DataFrame, y_train: pd.Series, n_splits: int, model: object
     ) -> Tuple[float, float]:
         """
         Perform stratified k-fold cross-validation on the given dataset.
@@ -90,7 +130,7 @@ class ModelOperations:
             X_train (pd.DataFrame): The input features for training.
             y_train (pd.Series): The target variable for training.
             n_splits (int): The number of folds to split the data into.
-            model: The machine learning model to be trained and evaluated.
+            model (object): The machine learning model to evaluate.
 
         Returns:
             Tuple[float, float]: A tuple containing the mean accuracy and
@@ -111,7 +151,7 @@ class ModelOperations:
         return mean_acc, std_acc
 
     def compute_metrics_for_learning_curve(
-        self, X_train: pd.DataFrame, y_train: pd.Series, model, cv: int = 10
+        self, X_train: pd.DataFrame, y_train: pd.Series, model: object, cv: int = 10
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
         Compute the metrics for a learning curve.
@@ -119,7 +159,7 @@ class ModelOperations:
         Args:
             X_train (pd.DataFrame): The input features for training.
             y_train (pd.Series): The target variable for training.
-            model: The machine learning model to evaluate.
+            model (object): The machine learning model to evaluate.
             cv (int): The number of cross-validation folds. Default is 10.
 
         Returns:
@@ -127,9 +167,11 @@ class ModelOperations:
             A tuple containing the following arrays:
                 - train_sizes: The number of training samples used in each fold.
                 - train_mean: The mean training scores for each fold.
-                - train_std: The standard deviation of the training scores for each fold.
+                - train_std: The standard deviation of the training scores for
+                  each fold.
                 - test_mean: The mean test scores for each fold.
-                - test_std: The standard deviation of the test scores for each fold.
+                - test_std: The standard deviation of the test scores for each
+                  fold.
         """
         train_sizes, train_scores, test_scores = learning_curve(
             estimator=model,
@@ -153,7 +195,7 @@ class ModelOperations:
         y_train: pd.Series,
         param_range: list,
         param_name: str,
-        model,
+        model: object,
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
         Compute the metrics for a validation curve.
@@ -163,7 +205,7 @@ class ModelOperations:
             y_train (pd.Series): The target variable for training.
             param_range (list): The range of values for the hyperparameter.
             param_name (str): The name of the hyperparameter.
-            model: The machine learning model to evaluate.
+            model (object): The machine learning model to evaluate.
 
             Returns:
             Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
@@ -189,7 +231,7 @@ class ModelOperations:
         self,
         X_train: pd.DataFrame,
         y_train: pd.Series,
-        model,
+        model: object,
         param_grid: dict,
         accuracy: str,
     ) -> Tuple[dict, float]:
@@ -199,7 +241,7 @@ class ModelOperations:
         Args:
             X_train (pd.DataFrame): The input features for training.
             y_train (pd.Series): The target variable for training.
-            model: The machine learning model to evaluate.
+            model (object): The machine learning model to evaluate.
             param_grid (dict): The hyperparameter grid to search over.
 
         Returns:
@@ -224,17 +266,18 @@ class ModelOperations:
         self,
         X_train: pd.DataFrame,
         y_train: pd.Series,
-        model,
+        model: object,
         param_grid: dict,
         accuracy: str,
     ) -> Tuple[dict, float]:
         """
-        Find the best hyperparameters for a given model using RandomizedSearchCV.
+        Find the best hyperparameters for a given model using
+        RandomizedSearchCV.
 
         Args:
             X_train (pd.DataFrame): The input features for training.
             y_train (pd.Series): The target variable for training.
-            model: The machine learning model to evaluate.
+            model (object): The machine learning model to evaluate.
             param_grid (dict): The hyperparameter grid to search over.
 
         Returns:
@@ -257,12 +300,12 @@ class ModelOperations:
 
         return best_params, best_score
 
-    def make_pipeline(self, classifier) -> Pipeline:
+    def make_pipeline(self, model: object) -> Pipeline:
         """
-        Create a pipeline for the given classifier.
+        Create a pipeline for the given model.
 
         Args:
-            classifier: The machine learning classifier to use.
+            model (object): The machine learning model to use in the pipeline.
 
         Returns:
             Pipeline: The machine learning pipeline.
@@ -278,8 +321,8 @@ class ModelOperations:
             "NDBI",
             "REI",
         ]
-        one_hot_encoder_columns = ["NDVI_bin"]
-        ordinal_encoder_columns = ["NDVI_dis"]
+        one_hot_encoder_columns = ["NDVI_binarized"]
+        ordinal_encoder_columns = ["NDVI_categorized"]
         categories = [["low_veg", "medium_veg", "high_veg"]]
 
         numerical_transformer = Pipeline(
@@ -303,7 +346,7 @@ class ModelOperations:
                 ("preprocessor", preprocessor),
                 ("scale", MinMaxScaler()),
                 ("dim_reduce", LinearDiscriminantAnalysis(n_components=3)),
-                ("classifier", classifier),
+                ("classifier", model),
             ]
         )
 

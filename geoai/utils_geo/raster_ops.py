@@ -1,3 +1,18 @@
+"""
+This module contains utility functions for working with raster data.
+
+Classes:
+    RasterOperations: A class that provides operations for reading, processing,
+    and exporting raster data.
+"""
+
+__author__ = "Reginald Jay L. Argamosa"
+__version__ = "0.1.0"
+__email__ = "regi.argamosa@gmail.com"
+__license__ = (
+    "Reginald Jay L. Argamosa Personal Use License: See LICENSE file for details"
+)
+
 import logging
 from typing import AnyStr
 
@@ -9,25 +24,41 @@ import matplotlib.pyplot as plt
 
 class RasterOperations:
     """
-    A class that provides operations for working with raster data.
-
-    This class contains methods for flattening a multi-dimensional numpy array,
-    converting a raster file to a numpy array, and masking the array with a
-    no data value if present.
+    A class that provides operations for reading, processing, and exporting
+    raster data.
 
     Attributes:
         None
+
+    Methods:
+        read_raster_metadata: Read a raster file and its metadata.
+        raster_to_array: Read raster file, mask no data, and convert it to a numpy array.
+        flatten_array: Convert raster file to a 1D numpy array.
+        compute_ndvi: Compute the Normalized Difference Vegetation Index (NDVI).
+        visualize_array: Visualize a 2D numpy array using matplotlib.
+        apply_mask: Apply a mask to the data array, replacing masked values with the specified mask value.
+        export_raster: Export data to a raster file with the given metadata.
+        add_band: Adds a new band to the existing raster array.
+        column_to_raster: Writes a single-band raster to the specified output path.
+        get_raster_dimensions: Get the dimensions of a raster file.
+        compute_ndvi_using_df: Computes NDVI from NIR and Red bands in a DataFrame.
+        compute_ndbi: Computes NDBI from NIR and SWIR bands in a DataFrame.
+        compute_rei: Computes REI from NIR and BLUE bands.
+        create_ndvi_bin: Create a binary NDVI mask from the NDVI band.
+        create_ndvi_category: Create a categorical NDVI mask from the NDVI band.
     """
 
-    def read_raster_metadata(self, file_path):
+    def read_raster_metadata(self, file_path: AnyStr) -> dict:
         """
         Read a raster file and its metadata.
 
         Args:
-            file_path (str): Path to the raster file.
+            file_path (AnyStr): Path to the raster file.
 
         Returns:
-            tuple: A tuple containing the numpy array of the raster data and its metadata.
+            tuple: A tuple containing the numpy array of the raster data and its
+            metadata.
+
 
         Metadata Dictionary Explanation:
         - 'driver': The format of the file (e.g., 'GTiff' for GeoTIFF).
@@ -37,12 +68,13 @@ class RasterOperations:
         - 'width': The number of columns in the raster.
         - 'height': The number of rows in the raster.
         - 'count': The number of bands in the raster.
-        - 'crs': The Coordinate Reference System (CRS) of the raster, defined by an EPSG code
-                 (e.g., CRS.from_epsg(4326) for WGS84).
-        - 'transform': An Affine transformation that defines the raster's georeferencing
-                       (i.e., how pixel coordinates are mapped to geographic coordinates).
-                       The parameters are coefficients of the affine transformation.
+        - 'crs': The Coordinate Reference System (CRS) of the raster, defined by
+          an EPSG code (e.g., CRS.from_epsg(4326) for WGS84).
+        - 'transform': An Affine transformation that defines the raster's
+          georeferencing (i.e., how pixel coordinates are mapped to geographic
+          coordinates). The parameters are coefficients of the affine transformation.
         """
+        logging.info(f"Reading raster metadata from {file_path}")
         with rasterio.open(file_path) as src:
             metadata = src.meta
         return metadata
@@ -56,12 +88,8 @@ class RasterOperations:
 
         Returns:
             ndarray: The resulting numpy array after conversion.
-
-            If the raster file has a defined no data value,
-            the function will mask the array with the no data
-            value and return the masked array.
-            Otherwise, it will return the array as is.
         """
+        logging.info(f"Reading raster file from {file_path}")
         with rasterio.open(file_path) as src:
             array = src.read()
             no_data_value = src.nodatavals[0]
@@ -71,23 +99,39 @@ class RasterOperations:
             src.close()
             return array
 
-    def flatten_array(self, array: np.ndarray, index=0):
+    def flatten_array(self, array: np.ndarray, index=0) -> np.ndarray:
         """
         Convert raster file to a 1D numpy array
 
         Args:
-            array: multi-dimensional numpy array
-            index: index of the band to be flattened
+            array (np.ndarray): multi-dimensional numpy array
+            index (int): index of the band to be flattened
 
         Returns:
-            flat_array: 1D numpy array
+            np.ndarray: 1D numpy array
         """
+        logging.info("Flattening the raster array")
         flat_array = array[index, :, :].flatten()
         return flat_array
 
     def compute_ndvi(
         self, nir_band: np.ndarray, red_band: np.ndarray
     ) -> np.ndarray | None:
+        """
+        Compute the Normalized Difference Vegetation Index (NDVI).
+
+        NDVI is calculated using the formula:
+        NDVI = (NIR - Red) / (NIR + Red)
+
+        Args:
+            nir_band (np.ndarray): The Near-Infrared (NIR) band of the image.
+            red_band (np.ndarray): The Red band of the image.
+
+        Returns:
+            np.ndarray | None: The computed NDVI values as a numpy array, or
+            None if the input bands do not have the same shape.
+        """
+        logging.info("Computing NDVI")
         if nir_band.shape != red_band.shape:
             logging.error("NIR and Red bands must have the same shape.")
             return None
@@ -98,39 +142,49 @@ class RasterOperations:
 
         return ndvi
 
-    def visualize_array(self, array) -> None:
+    def visualize_array(self, array: np.ndarray, title: str) -> None:
         """
         Visualize a 2D numpy array using matplotlib
 
         Args:
-            array: 2D numpy array to be visualized
+            array (np.ndarray): 2D numpy array to be visualized
+            title (str): title of the plot
+
+        Returns:
+            None
         """
         plt.figure(figsize=(10, 6))
         plt.imshow(array, cmap="viridis")
+        plt.title(title)
         plt.colorbar()
         plt.show()
         return None
 
-    def apply_mask(self, data, mask, mask_value=np.nan) -> np.ndarray:
+    def apply_mask(
+        self, data: np.ndarray, mask: np.ndarray, mask_value: int | float = np.nan
+    ) -> np.ndarray:
         """
         Apply a mask to the data array, replacing masked values
         with the specified mask value.
 
         Args:
             data (np.ndarray): The data array to be masked.
-            mask (np.ndarray): A boolean array where True indicates
-                               the position of values to be masked in the data array.
+            mask (np.ndarray): A boolean array where True indicates the position
+            of values to be masked in the data array.
             mask_value (optional): The value to replace the masked values with.
-                                   Default is np.nan.
+            Default is np.nan.
 
         Returns:
             np.ndarray: The masked data array.
         """
+        logging.info("Applying mask to the data array")
         masked_data = np.copy(data)
         masked_data[mask] = mask_value
         return masked_data
 
-    def export_raster(self, data, metadata, output_path) -> None:
+    def export_raster(
+        self, data: np.ndarray, metadata: dict, output_path: AnyStr
+    ) -> None:
         """
         Export data to a raster file with the given metadata.
 
@@ -138,7 +192,11 @@ class RasterOperations:
             data (np.ndarray): The raster data to be exported.
             metadata (dict): The metadata for the raster file
             output_path (str): The file path where the raster will be saved.
+
+        Returns:
+            None
         """
+        logging.info(f"Exporting raster to {output_path}")
         if data.ndim == 2:
             metadata.update(count=1, height=data.shape[0], width=data.shape[1])
         elif data.ndim == 3:
@@ -153,12 +211,15 @@ class RasterOperations:
             dst.write(data)
             return None
 
-    def add_band(self, raster_as_array, metadata, new_band) -> np.ndarray:
+    def add_band(
+        self, raster_as_array: np.ndarray, metadata: dict, new_band: np.ndarray
+    ) -> np.ndarray:
         """
         Adds a new band to the existing raster array.
 
         Args:
             raster_as_array (np.ndarray): The existing raster data array.
+            metadata (dict): The metadata of the existing raster.
             new_band (np.ndarray): The new band data to add.
 
         Returns:
@@ -187,7 +248,7 @@ class RasterOperations:
         band_name: str,
         metadata: tuple,
         dtype="float32",
-    ):
+    ) -> None:
         """
         Writes a single-band raster to the specified output path.
 
@@ -197,12 +258,13 @@ class RasterOperations:
             band_name (str): the name of the column in the DataFrame to write.
             metadata (tuple): containing (height, width, CRS, Affine transform).
             dtype (str): the data type of the output raster.
+
+        Returns:
+            None
         """
         height, width, crs, transform = metadata
-        # Extract the band data from the DataFrame and reshape it to 2D
         band = dataframe[band_name].values.reshape(height, width)
 
-        # Write the band to the output raster file
         with rasterio.open(
             output_path,
             "w",
@@ -217,9 +279,10 @@ class RasterOperations:
         ) as dst:
             dst.write(band, 1)
             dst.close()
-        print(f"Raster written to {output_path}")
+        logging.info(f"Raster written to {output_path}")
+        return None
 
-    def get_raster_dimensions(self, file_path: AnyStr):
+    def get_raster_dimensions(self, file_path: AnyStr) -> tuple:
         """
         Get the dimensions of a raster file
 
@@ -247,7 +310,7 @@ class RasterOperations:
         self, df: pd.DataFrame, nir_band: str, red_band: str
     ) -> pd.DataFrame:
         """
-        Compute the Normalized Difference Vegetation Index (NDVI) from NIR and Red bands.
+        Computes NDVI from NIR and Red bands in a DataFrame.
 
         Args:
             df (pd.DataFrame): The DataFrame containing the NIR and Red bands.
@@ -264,7 +327,7 @@ class RasterOperations:
         self, df: pd.DataFrame, nir_band: str, swir_band: str
     ) -> pd.DataFrame:
         """
-        Compute the Normalized Difference Built-up Index (NDBI) from NIR and SWIR bands.
+        Computes NDBI from NIR and SWIR bands in a DataFrame.
 
         Args:
             df (pd.DataFrame): The DataFrame containing the NIR and SWIR bands.
@@ -279,7 +342,7 @@ class RasterOperations:
 
     def compute_rei(self, df: pd.DataFrame, nir_band: str, blue: str) -> pd.DataFrame:
         """
-        Compute the Road Extraction index (REI) from NIR and BLUE bands.
+        Computes REI from NIR and BLUE bands.
 
         Args:
             df (pd.DataFrame): The DataFrame containing the NIR and SWIR bands.
@@ -302,13 +365,15 @@ class RasterOperations:
             ndvi_band (str): The name of the NDVI band column.
 
         Returns:
-            pd.DataFrame: The input DataFrame with an additional 'NDVI_bin' column.
+            pd.DataFrame: The input DataFrame with an additional 'NDVI_bin'
+            column.
+
         """
         ndvi_binary_edges = [-float("inf"), 0.5, float("inf")]
         ndvi_binary_labels = ["non_veg", "veg"]
 
         column_data = df[ndvi_band].values
-        df["NDVI_bin"] = pd.cut(
+        df["NDVI_binary"] = pd.cut(
             column_data,
             bins=ndvi_binary_edges,
             labels=ndvi_binary_labels,
@@ -317,7 +382,7 @@ class RasterOperations:
 
         return df
 
-    def create_ndvi_discrete(self, df: pd.DataFrame, ndvi_band: str) -> pd.DataFrame:
+    def create_ndvi_category(self, df: pd.DataFrame, ndvi_band: str) -> pd.DataFrame:
         """
         Create a categorical NDVI mask from the NDVI band.
 
@@ -332,7 +397,7 @@ class RasterOperations:
         ndvi_category_labels = ["low_veg", "medium_veg", "high_veg"]
 
         column_data = df[ndvi_band].values
-        df["NDVI_dis"] = pd.cut(
+        df["NDVI_categorized"] = pd.cut(
             column_data,
             bins=ndvi_category_edges,
             labels=ndvi_category_labels,
