@@ -1,4 +1,9 @@
-# GeoAI-ISPRS-SS
+# Overview
+![Overview](isprs-tc5.jpg)
+
+![License: MIT](https://img.shields.io/badge/license-MIT-green)
+![Python Version](https://img.shields.io/badge/python-3.11-blue)
+## GeoAI-ISPRS-SS
 
 Repository for the ISPRS Summer School TC V, focusing on applying traditional machine learning to remote sensing datasets. Participants will gain hands-on experience in preprocessing, analyzing, and modeling remote sensing data using various machine learning techniques.
 
@@ -78,3 +83,16 @@ Repository for the ISPRS Summer School TC V, focusing on applying traditional ma
 
 14. **Test the Installation**
     - Open the `Import-Test.ipynb` notebook and run the first cell by clicking on the cell and pressing `Shift+Enter`. If prompted, select the `geoai-env` kernel.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+For any questions or inquiries, please contact:
+
+- **Name:** Reginald Argamosa (Regi)
+- **Email:** regi.argamosa@gmail.com
+- **GitHub:** https://github.com/RJLA
+- **LinkedIn:** https://linkedin.com/in/rjla
