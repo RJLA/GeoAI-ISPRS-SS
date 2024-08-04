@@ -22,9 +22,11 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 from catboost import CatBoostClassifier
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.compose import ColumnTransformer
+from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 from sklearn.model_selection import (
     GridSearchCV,
@@ -33,7 +35,7 @@ from sklearn.model_selection import (
     learning_curve,
     validation_curve,
 )
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import FeatureUnion, FunctionTransformer, Pipeline
 from sklearn.preprocessing import (
     MinMaxScaler,
     OneHotEncoder,
@@ -63,7 +65,8 @@ class ModelOperations:
         GridSearchCV.
         find_best_hyperparameters_rs: Find the best hyperparameters using
         RandomizedSearchCV.
-        make_pipeline: Create a pipeline for a given classifier.
+        make_simple_pipeline: Create a pipeline for a given classifier.
+        make_selected_features_pipeline: Create a pipeline for feature
     """
 
     def select_features(
@@ -314,3 +317,85 @@ class ModelOperations:
         pipeline = Pipeline([("min_max_scaler", min_max_scaler), ("model", model)])
 
         return pipeline
+
+    def make_selected_features_pipeline(
+        self, X_train: pd.DataFrame, model: object, n_features: int
+    ) -> Pipeline:
+        """
+        Creates a pipeline for feature selection and model training.
+        Args:
+            X_train (pd.DataFrame): The training dataset.
+            model (object): The machine learning model.
+            n_features (int): The number of features to select.
+        Returns:
+            Pipeline: The pipeline for feature selection and model training.
+        """
+        numerical_columns = X_train.select_dtypes(include=["float64"]).columns.tolist()
+        one_hot_encoder_columns = ["NDVI_binary"]
+        ordinal_encoder_columns = ["NDVI_categorized"]
+        categories = [["low_veg", "medium_veg", "high_veg"]]
+
+        log_transformer = FunctionTransformer(np.log1p)
+        poly_transformer = PolynomialFeatures(degree=2, include_bias=False)
+        onehot_encoder = OneHotEncoder(dtype=int, sparse_output=False)
+        ordinal_encoder = OrdinalEncoder(categories=categories, dtype=int)
+
+        preprocessor = ColumnTransformer(
+            transformers=[
+                (
+                    "numerical_transformer",
+                    Pipeline(
+                        steps=[
+                            ("log_transformer", log_transformer),
+                            ("poly_transformer", poly_transformer),
+                        ]
+                    ),
+                    numerical_columns,
+                ),
+                ("onehot_encoder", onehot_encoder, one_hot_encoder_columns),
+                ("ordinal_encoder", ordinal_encoder, ordinal_encoder_columns),
+            ]
+        )
+
+        pipeline_1 = Pipeline(steps=[("preprocessor", preprocessor)])
+
+        lda_transformer = LinearDiscriminantAnalysis(n_components=3)
+        min_max_scaler = MinMaxScaler()
+
+        pipeline_2 = Pipeline(
+            steps=[
+                ("pipeline_1", pipeline_1),
+                ("min_max_scaler", min_max_scaler),
+                ("lda_transformer", lda_transformer),
+            ]
+        )
+
+        pca_transformer = PCA(n_components=7)
+
+        pipeline_3 = Pipeline(
+            steps=[
+                ("pipeline_1", pipeline_1),
+                ("min_max_scaler", min_max_scaler),
+                ("pca_transformer", pca_transformer),
+            ]
+        )
+
+        combined_features = FeatureUnion(
+            [
+                ("pipeline_1", pipeline_1),
+                ("pipeline_2", pipeline_2),
+                ("pipeline_3", pipeline_3),
+            ]
+        )
+
+        feature_selector = SelectKBest(score_func=f_classif, k=n_features)
+
+        pipeline_4 = Pipeline(
+            steps=[
+                ("combined_features", combined_features),
+                ("feature_selector", feature_selector),
+                ("model", model),
+            ]
+        )
+
+        return pipeline_4
