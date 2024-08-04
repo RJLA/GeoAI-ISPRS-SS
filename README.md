@@ -6,12 +6,12 @@ modeling remote sensing data using various machine learning techniques.
 
 # GeoAI Project Setup
 
-This README provides instructions for setting up the GeoAI project environment.
-
 ## Prerequisites
 
 - Python 3.11
 - pip (Python package installer)
+- git (Version control system)
+- vscode (Visual Studio Code) or any other code editor
 
 ## Setup Instructions
 
@@ -31,4 +31,18 @@ This README provides instructions for setting up the GeoAI project environment.
 
 4. Clone the project repository
     ```bash
-    git clone 
+    git clone https://github.com/RJLA/GeoAI-ISPRS-SS.git
+
+5. Create a virtual environment
+    ```bash
+    python -m venv geoai-env
+    ```
+6. Activate the virtual environment
+  ```
+  .\geoai-env\Scripts\activate
+  ```
+
+7. Install project requirements
+    ```bash
+    pip install -r requirements.txt
+    ```
