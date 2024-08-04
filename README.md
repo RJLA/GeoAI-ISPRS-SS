@@ -5,7 +5,7 @@
 ![Python Version](https://img.shields.io/badge/python-3.11-blue)
 ## ISPRS-TC-V GeoAI Summer School
 
-Repository for the ISPRS Summer School TC V, focusing on applying traditional machine learning to remote sensing datasets. Participants will gain hands-on experience in preprocessing, analyzing, and modeling remote sensing data using various machine learning techniques.
+Repository for the ISPRS Summer School TC V, focusing on applying machine learning to remote sensing datasets. Participants will gain hands-on experience in preprocessing, analyzing, and modeling remote sensing data using various machine learning techniques.
 
 ## Prerequisites
 
