@@ -54,6 +54,9 @@ class VisualizeOperations:
         plot_learning_curve: Plots the learning curve for a machine learning model.
         plot_validation_curve: Plots the validation curve for a given parameter
         range.
+        plot_histograms_with_kde: Plots histograms with KDE for the specified
+        columns of the DataFrame in a single figure.
+        plot_pca: Plot the PCA components.
     """
 
     figure_size = (12, 8)
@@ -344,14 +347,16 @@ class VisualizeOperations:
         return None
 
     def plot_discriminality_ratio(
-        self, explained_variance_ratio, cumulative_discriminability
+        self,
+        explained_variance_ratio: np.ndarray,
+        cumulative_discriminability: np.ndarray,
     ) -> None:
         """
         Plot the individual and cumulative discriminability ratios.
 
         Args:
-            explained_variance_ratio (list): List of explained variance ratios.
-            cumulative_discriminability (list): List of cumulative discriminability values.
+            explained_variance_ratio (np.ndarray): List of explained variance ratios.
+            cumulative_discriminability (np.ndarray): List of cumulative discriminability values.
 
         Returns:
          None
@@ -380,12 +385,13 @@ class VisualizeOperations:
         self.finalize_plot()
         return None
 
-    def plot_feature_importance(self, importance) -> None:
+    def plot_feature_importance(self, importance: pd.DataFrame) -> None:
         """
         Plot the feature importance values.
 
         Args:
-            feature_importance (list): DataFrame containing feature importance values.
+            feature_importance (pd.DataFrame): DataFrame containing feature
+            importance values.
 
         Returns:
             None
@@ -463,17 +469,22 @@ class VisualizeOperations:
         return None
 
     def plot_validation_curve(
-        self, param_range, train_mean, train_std, test_mean, test_std
+        self,
+        param_range: np.ndarray,
+        train_mean: np.ndarray,
+        train_std: np.ndarray,
+        test_mean: np.ndarray,
+        test_std: np.ndarray,
     ) -> None:
         """
         Plots the validation curve for a given parameter range.
 
         Args:
-            param_range (array-like): The range of parameter values.
-            train_mean (array-like): The mean training accuracy for each parameter value.
-            train_std (array-like): The standard deviation of the training accuracy for each parameter value.
-            test_mean (array-like): The mean validation accuracy for each parameter value.
-            test_std (array-like): The standard deviation of the validation accuracy for each parameter value.
+            param_range (np.ndarray): The range of parameter values.
+            train_mean (np.ndarray): The mean training accuracy for each parameter value.
+            train_std (np.ndarray): The standard deviation of the training accuracy for each parameter value.
+            test_mean (np.ndarray): The mean validation accuracy for each parameter value.
+            test_std (np.ndarray): The standard deviation of the validation accuracy for each parameter value.
 
         Returns:
             None
@@ -553,4 +564,43 @@ class VisualizeOperations:
             fig.delaxes(axes[j])
 
         plt.suptitle(title, fontsize=16)
+        self.finalize_plot()
+
+    def scatter_color_coded(
+        self, X_train: pd.DataFrame, y_train: pd.Series, X_col_1: str, X_col_2: str
+    ) -> None:
+        """
+        Plot the PCA components.
+
+        Args:
+            X_train (pd.DataFrame): The DataFrame containing the column
+            1 and column 2
+            y_train (pd.Series): The DataFrame containing the target labels.
+            X_col_1 (str): The name of the first column to plot.
+            X_col_2 (str): The name of the second column to plot.
+
+        Returns:
+            None
+        """
+
+        df = pd.concat([X_train, y_train.reset_index(drop=True)], axis=1)
+        classes = y_train.iloc[:, 0].unique()
+        num_classes = len(classes)
+        colors = plt.cm.get_cmap("viridis", num_classes)
+
+        plt.figure(figsize=self.figure_size)
+
+        for i, class_label in enumerate(classes):
+            indices_to_keep = df[y_train.columns[0]] == class_label
+            plt.scatter(
+                df.loc[indices_to_keep, X_col_1],
+                df.loc[indices_to_keep, X_col_2],
+                c=np.array(colors(i)).reshape(1, -1),
+                label=class_label,
+            )
+
+        plt.xlabel(X_col_1)
+        plt.ylabel(X_col_2)
+        plt.title(f"{X_col_1} vs {X_col_2}")
+        plt.legend(classes)
         self.finalize_plot()

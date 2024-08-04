@@ -17,11 +17,11 @@ __license__ = (
 from typing import Tuple
 import numpy as np
 import pandas as pd
-from itertools import combinations
 from sklearn.calibration import LabelEncoder
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
+from sklearn.pipeline import FunctionTransformer
 from sklearn.preprocessing import (
     MinMaxScaler,
     OneHotEncoder,
@@ -407,19 +407,20 @@ class PreProcessingOperations:
             Tuple[pd.DataFrame, pd.DataFrame] | pd.DataFrame: Log-transformed
             DataFrames.
         """
+
         if not columns:
             raise ValueError("Columns list cannot be empty.")
-
-        def transform_df(X, columns):
-            if X is None:
-                return None
-            X[columns] = np.log1p(X[columns])
-            return X
-
-        X_train_transformed = transform_df(X_train, columns)
+        log_trasformer = FunctionTransformer(func=np.log1p)
+        X_train_transformed = log_trasformer.fit_transform(X_train[columns])
+        X_train_transformed = pd.DataFrame(
+            X_train_transformed, columns=columns, index=X_train.index
+        )
 
         if X_test is not None:
-            X_test_transformed = transform_df(X_test, columns)
+            X_test_transformed = log_trasformer.transform(X_test[columns])
+            X_test_transformed = pd.DataFrame(
+                X_test_transformed, columns=columns, index=X_test.index
+            )
 
             return X_train_transformed, X_test_transformed
 
