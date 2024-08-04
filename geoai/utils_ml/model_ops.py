@@ -300,54 +300,17 @@ class ModelOperations:
 
         return best_params, best_score
 
-    def make_pipeline(self, model: object) -> Pipeline:
+    def make_simple_pipeline(self, model: object) -> Pipeline:
         """
-        Create a pipeline for the given model.
+        Create a simple pipeline for a given classifier.
 
         Args:
             model (object): The machine learning model to use in the pipeline.
 
         Returns:
-            Pipeline: The machine learning pipeline.
+            Pipeline: A pipeline containing the model.
         """
-
-        numerical_columns = [
-            "BLUE",
-            "GREEN",
-            "RED",
-            "NIR",
-            "SWIR",
-            "NDVI",
-            "NDBI",
-            "REI",
-        ]
-        one_hot_encoder_columns = ["NDVI_binarized"]
-        ordinal_encoder_columns = ["NDVI_categorized"]
-        categories = [["low_veg", "medium_veg", "high_veg"]]
-
-        numerical_transformer = Pipeline(
-            steps=[
-                ("poly", PolynomialFeatures(degree=2)),
-                ("select", SelectKBest(k=24)),
-            ]
-        )
-        one_hot_transformer = OneHotEncoder(dtype=int, sparse_output=False)
-        ordinal_transformer = OrdinalEncoder(categories=categories, dtype=int)
-        preprocessor = ColumnTransformer(
-            transformers=[
-                ("num", numerical_transformer, numerical_columns),
-                ("onehot", one_hot_transformer, one_hot_encoder_columns),
-                ("ordinal", ordinal_transformer, ordinal_encoder_columns),
-            ],
-            remainder="drop",
-        )
-        pipeline = Pipeline(
-            steps=[
-                ("preprocessor", preprocessor),
-                ("scale", MinMaxScaler()),
-                ("dim_reduce", LinearDiscriminantAnalysis(n_components=3)),
-                ("classifier", model),
-            ]
-        )
+        min_max_scaler = MinMaxScaler()
+        pipeline = Pipeline([("min_max_scaler", min_max_scaler), ("model", model)])
 
         return pipeline

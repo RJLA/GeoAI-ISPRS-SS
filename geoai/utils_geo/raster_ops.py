@@ -405,3 +405,25 @@ class RasterOperations:
         )
 
         return df
+
+    def indices_binary_category(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Compute NDVI, NDBI, and REI from the specified bands in the DataFrame.
+        Make binary and categoriy for NDVI.
+
+        Args:
+            df (pd.DataFrame): The DataFrame containing the bands.
+
+        Returns:
+            pd.DataFrame: The input DataFrame with additional columns for NDVI,
+            NDBI, REI, Binary and Category.
+        """
+
+        df = self.compute_ndvi_using_df(df, "NIR", "RED")
+        df = self.compute_ndbi(df, "NIR", "SWIR")
+        df = self.compute_rei(df, "NIR", "BLUE")
+
+        df = self.create_ndvi_category(df, "NDVI")
+        df = self.create_ndvi_bin(df, "NDVI")
+
+        return df
