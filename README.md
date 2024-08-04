@@ -86,7 +86,7 @@ Repository for the ISPRS Summer School TC V, focusing on applying machine learni
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [[LICENSE](LICENSE)](https://github.com/RJLA/GeoAI-ISPRS-SS/blob/main/LICENSE.md) file for details.
 
 ## Contact
 
