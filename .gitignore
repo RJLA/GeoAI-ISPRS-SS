@@ -6,4 +6,6 @@ __pycache__/
 *.log
 *.log.*
 *.log-*
-*.tif
+raster_files/*.tif
+!raster_files/QC_2018_2023.tif
+csv_files/*.csv
