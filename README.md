@@ -3,6 +3,13 @@
 
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 ![Python Version](https://img.shields.io/badge/python-3.11-blue)
+![Black](https://img.shields.io/badge/code%20style-black-000000.svg)
+![ISPRS](https://img.shields.io/badge/isprs-tcv-blue)
+
+[![Website](https://img.shields.io/badge/summer_school-symposium2024/page12.html-2ea44f?style=for-the-badge)](https://www.isprs.org/tc5-symposium2024/page12.html)
+
+[![Website](https://img.shields.io/badge/isprs.org/tc5-symposium2024-2ea44f?style=for-the-badge)](https://www.isprs.org/tc5-symposium2024/index.html)
+
 ## ISPRS-TC-V GeoAI Summer School
 
 Repository for the ISPRS Summer School TC V, focusing on applying machine learning to remote sensing datasets. Participants will gain hands-on experience in preprocessing, analyzing, and modeling remote sensing data using various machine learning techniques.
