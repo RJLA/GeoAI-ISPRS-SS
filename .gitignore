@@ -10,5 +10,5 @@ raster_files/*
 !raster_files/
 !raster_files/QC_2018_2023.tif
 !csv_files/
-csv_files/*
+csv_files/*.csv
 
