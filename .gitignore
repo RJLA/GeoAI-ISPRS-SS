@@ -1,14 +1,17 @@
 geoai-env/
 *.pyc
-*.tif.aux.xml
 catboost_info/
 __pycache__/
 *.log
 *.log.*
 *.log-*
-raster_files/*
-!raster_files/
+raster_files/*.tif.aux.xml
+raster_files/*.tif.ovr
+raster_files/*.tif.xml
+raster_files/*.tif.aux
+raster_files/*.tif
 !raster_files/QC_2018_2023.tif
+!raster_files/
 !csv_files/
 csv_files/*.csv
 
