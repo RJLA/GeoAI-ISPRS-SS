@@ -337,6 +337,8 @@ class PreProcessingOperations:
         y_train_encoded = pd.Series(
             le.fit_transform(y_train), index=y_train.index, name=y_train.name
         )
+        class_mapping = {class_: index for index, class_ in enumerate(le.classes_)}
+        print(class_mapping)
 
         if y_test is not None:
             y_test_encoded = pd.Series(
