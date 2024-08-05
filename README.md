@@ -1,29 +1,105 @@
-# GeoAI-ISPRS-SS
-This repository is designed for the ISPRS Summer School, focusing on applying traditional machine learning and PyTorch to remote sensing datasets. Participants will gain hands-on experience in preprocessing, analyzing, and modeling remote sensing data using various machine learning techniques and the PyTorch framework.
-## Table of Contents
+# Overview
+![Overview](isprs-tc5.jpg)
 
-- [GeoAI-ISPRS-SS](#geoai-isprs-ss)
-    - [I. Preparing A Raster for Machine Learning](#i-preparing-a-raster-for-machine-learning)
-        - [a. Introduction (Lecture)](#a-introduction-lecture)
-        - [b. Reading Raster Data with Rasterio (Coding)](#b-reading-raster-data-with-rasterio-coding)
-        - [c. Converting Raster Data to DataFrame (Coding)](#c-converting-raster-data-to-dataframe-coding)
-        - [d. Data Cleaning and Preparation in DataFrame (Coding)](#d-data-cleaning-and-preparation-in-dataframe-coding)
-        - [e. Converting DataFrame Columns to Raster (Coding)](#e-converting-dataframe-columns-to-raster-coding)
-    - [II. Introduction to Traditional Machine Learning (Lecture)](#ii-introduction-to-traditional-machine-learning-lecture)
-        - [a. Supervised Machine Learning (Lecture)](#a-supervised-machine-learning-lecture)
-        - [b. Unsupervised Machine Learning (Lecture)](#b-unsupervised-machine-learning-lecture)
-        - [c. Notations and Terminology (Lecture)](#c-notations-and-terminology-lecture)
-        - [d. Roadmap for building machine learning systems (Lecture)](#d-roadmap-for-building-machine-learning-systems-lecture)
-        - [e. Model Evaluation and Hyperparameter Tuning (Coding)](#e-model-evaluation-and-hyperparameter-tuning-coding)
-        - [f. Machine Learning Classification (Coding)](#f-machine-learning-classification-coding)
-        - [g. Clustering (Coding)](#g-clustering-coding)
-        - [h. Machine Learning Regression (Coding)](#h-machine-learning-regression-coding)
-    - [III. PyTorch and Semantic Segmentation for Satellite Images (Lecture)](#iii-pytorch-and-semantic-segmentation-for-satellite-images-lecture)
-        - [a. Introduction (Lecture)](#a-introduction-lecture-1)
-        - [b. Tensor (Lecture)](#b-tensor-lecture)
-        - [c. Linear Regression from Scratch](#c-linear-regression-from-scratch)
-        - [d. Convolutional Neural Network (CNN)](#d-convolutional-neural-network-cnn)
-        - [e. Semantic Segmentation](#e-semantic-segmentation)
-    - [IV. GeoAI Chapter Summary and Wrap-up (Lecture)](#iv-geoai-chapter-summary-and-wrap-up-lecture)
+![License: MIT](https://img.shields.io/badge/license-MIT-green)
+![Python Version](https://img.shields.io/badge/python-3.11-blue)
+![Black](https://img.shields.io/badge/code%20style-black-000000.svg)
+![ISPRS](https://img.shields.io/badge/isprs-tcv-blue)
 
+[![Website](https://img.shields.io/badge/summer_school-symposium2024/page12.html-2ea44f?style=for-the-badge)](https://www.isprs.org/tc5-symposium2024/page12.html)
 
+[![Website](https://img.shields.io/badge/isprs.org/tc5-symposium2024-2ea44f?style=for-the-badge)](https://www.isprs.org/tc5-symposium2024/index.html)
+
+## ISPRS-TC-V GeoAI Summer School
+
+Repository for the ISPRS Summer School TC V, focusing on applying machine learning to remote sensing datasets. Participants will gain hands-on experience in preprocessing, analyzing, and modeling remote sensing data using various machine learning techniques.
+
+## Prerequisites
+
+- Python 3.11 (this repository is not tested on other Python versions)
+- Visual Studio Code (VSCode)
+- Git
+
+## Setup Instructions
+
+1. **Install Python 3.11**
+   - Download and install Python 3.11 from the [official Python website](https://www.python.org/downloads/release/python-3110/).
+   - During installation, ensure you check the option to "Add Python 3.11 to PATH".
+
+2. **Verify Python Installation**
+   - Open a terminal and run the following command:
+     ```bash
+     python --version
+     ```
+     You should see the Python version you installed.
+
+3. **Install VSCode**
+   - Download and install VSCode from the [official VSCode website](https://code.visualstudio.com/download).
+
+4. **Install Git**
+   - Download and install Git from the [official Git website](https://git-scm.com/download).
+
+5. **Create a Folder for the Project**
+   - Create a new folder on your local machine where you want to store the project files.
+
+6. **Open VSCode and Create a New Terminal**
+   - Open VSCode and click on Terminal > New Terminal to open a new terminal window.
+   - Navigate to the project folder you created in the previous step by running:
+     ```bash
+     cd path\to\project\folder
+     ```
+
+7. **Clone the Project Repository**
+   - In the terminal, run the following command to clone the repository:
+     ```bash
+     git clone https://github.com/RJLA/GeoAI-ISPRS-SS.git
+     ```
+
+8. **Navigate to the Repository Folder**
+   - Change directory to the repository folder:
+     ```bash
+     cd GeoAI-ISPRS-SS
+     ```
+
+9. **Install `virtualenv`**
+   - In the terminal, run:
+     ```bash
+     pip install virtualenv
+     ```
+
+10. **Create a Virtual Environment**
+    - Run the following command to create a virtual environment:
+      ```bash
+      python -m venv geoai-env
+      ```
+
+11. **Open the Project Folder in VSCode**
+    - In VSCode, click on File > Open Folder and select the `GeoAI-ISPRS-SS` folder you cloned.
+
+12. **Activate the Virtual Environment**
+    - Open a terminal in VSCode and run:
+      ```bash
+      .\geoai-env\Scripts\activate
+      ```
+
+13. **Install Project Requirements**
+    - Run the following command to install the required Python packages:
+      ```bash
+      pip install -r requirements.txt
+      ```
+
+14. **Test the Installation**
+    - Open the `Import-Test.ipynb` notebook and run the first cell by clicking on the cell and pressing `Shift+Enter`. If prompted, select the `geoai-env` kernel.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/RJLA/GeoAI-ISPRS-SS/blob/main/LICENSE.md) file for details.
+
+## Contact
+
+For any questions or inquiries, please contact:
+
+- **Name:** Reginald Argamosa (Regi)
+- **Email:** regi.argamosa@gmail.com
+- **GitHub:** https://github.com/RJLA
+- **LinkedIn:** https://linkedin.com/in/rjla
