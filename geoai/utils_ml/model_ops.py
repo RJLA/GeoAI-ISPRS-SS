@@ -52,6 +52,8 @@ class ModelOperations:
         None
 
     Methods:
+        select_important_features: Select important features from a dataset
+        print_shape: Print the shape of the dataset.
         select_features: Select important features from a dataset using
         CatBoost.
         calculate_classification_accuracy: Calculate classification metrics.
@@ -67,7 +69,61 @@ class ModelOperations:
         RandomizedSearchCV.
         make_simple_pipeline: Create a pipeline for a given classifier.
         make_selected_features_pipeline: Create a pipeline for feature
+        selection and model training.
     """
+
+    @staticmethod
+    def select_important_features(X: np.ndarray) -> np.ndarray:
+        """
+        Select important features from a dataset.
+
+        Args:
+            X (np.ndarray): The input dataset.
+
+        Returns:
+            np.ndarray: The dataset with the important features selected.
+        """
+        important_indices = [
+            56,
+            4,
+            34,
+            55,
+            49,
+            35,
+            52,
+            40,
+            47,
+            5,
+            54,
+            50,
+            48,
+            20,
+            30,
+            3,
+            42,
+            19,
+            41,
+            39,
+            27,
+        ]
+        important_indices = [i - 1 for i in important_indices]
+        print("Shape before feature selection:", X.shape)
+        return X[:, important_indices]
+
+    @staticmethod
+    def print_shape(X: np.ndarray) -> np.ndarray:
+        """
+        Print the shape of the dataset.
+
+        Args:
+            X (np.ndarray): The input dataset.
+
+        Returns:
+            np.ndarray: The input dataset.
+        """
+
+        print("Shape after feature selection:", X.shape)
+        return X
 
     def select_features(
         self, X_train: pd.DataFrame, y_train: pd.DataFrame
@@ -319,48 +375,78 @@ class ModelOperations:
         return pipeline
 
     def make_selected_features_pipeline(
-        self, X_train: pd.DataFrame, model: object, n_features: int
+        self, X_train: pd.DataFrame, model: object
     ) -> Pipeline:
         """
         Creates a pipeline for feature selection and model training.
         Args:
             X_train (pd.DataFrame): The training dataset.
             model (object): The machine learning model.
-            n_features (int): The number of features to select.
         Returns:
             Pipeline: The pipeline for feature selection and model training.
         """
-        numerical_columns = X_train.select_dtypes(include=["float64"]).columns.tolist()
+
+        # ======================================================#
+        # for categorical features
         one_hot_encoder_columns = ["NDVI_binary"]
         ordinal_encoder_columns = ["NDVI_categorized"]
         categories = [["low_veg", "medium_veg", "high_veg"]]
 
-        log_transformer = FunctionTransformer(np.log1p)
-        poly_transformer = PolynomialFeatures(degree=2, include_bias=False)
-        onehot_encoder = OneHotEncoder(dtype=int, sparse_output=False)
-        ordinal_encoder = OrdinalEncoder(categories=categories, dtype=int)
+        one_hot_transformer = OneHotEncoder(
+            dtype=int, sparse_output=False
+        )  # Instantiate the one hot transformer
 
-        preprocessor = ColumnTransformer(
+        ordinal_transformer = OrdinalEncoder(
+            categories=categories, dtype=int
+        )  # Instantiate the ordinal transformer
+        # ======================================================#
+
+        # ======================================================#
+        # for numerical features
+        numerical_columns = X_train.select_dtypes(include=["float64"]).columns.tolist()
+        log_trasformer = FunctionTransformer(
+            func=np.log1p
+        )  # Instantiate the log transformer
+        poly_transformer = PolynomialFeatures(
+            degree=2, include_bias=False
+        )  # Instantiate the polynomial transformer
+        # ======================================================#
+
+        # ======================================================#
+        # make a pipeline for each type of transformer
+        categorical_transformer_1 = Pipeline(
+            steps=[("one_hot_transformer", one_hot_transformer)]
+        )
+
+        categorical_transformer_2 = Pipeline(
+            steps=[("ordinal_transformer", ordinal_transformer)]
+        )
+
+        numerical_transformer = Pipeline(
+            steps=[("log", log_trasformer), ("poly", poly_transformer)]
+        )
+
+        # ======================================================#
+        # Create a preprocessor that includes the numerical, one hot, and ordinal transformers
+        pipeline_1 = ColumnTransformer(
             transformers=[
                 (
-                    "numerical_transformer",
-                    Pipeline(
-                        steps=[
-                            ("log_transformer", log_transformer),
-                            ("poly_transformer", poly_transformer),
-                        ]
-                    ),
-                    numerical_columns,
+                    "categorical_transformer_1",
+                    categorical_transformer_1,
+                    one_hot_encoder_columns,
                 ),
-                ("onehot_encoder", onehot_encoder, one_hot_encoder_columns),
-                ("ordinal_encoder", ordinal_encoder, ordinal_encoder_columns),
+                (
+                    "categorical_transformer_2",
+                    categorical_transformer_2,
+                    ordinal_encoder_columns,
+                ),
+                ("numerical_transformer", numerical_transformer, numerical_columns),
             ]
         )
 
-        pipeline_1 = Pipeline(steps=[("preprocessor", preprocessor)])
-
-        lda_transformer = LinearDiscriminantAnalysis(n_components=3)
-        min_max_scaler = MinMaxScaler()
+        # Pipeline 2: Pipeline 1 + LDA
+        min_max_scaler = MinMaxScaler()  # Instantiate MinMaxScaler
+        lda_transformer = LinearDiscriminantAnalysis(n_components=3)  # Instantiate LDA
 
         pipeline_2 = Pipeline(
             steps=[
@@ -369,7 +455,7 @@ class ModelOperations:
                 ("lda_transformer", lda_transformer),
             ]
         )
-
+        # Pipeline 3: Pipeline 1 + PCA
         pca_transformer = PCA(n_components=7)
 
         pipeline_3 = Pipeline(
@@ -380,7 +466,8 @@ class ModelOperations:
             ]
         )
 
-        combined_features = FeatureUnion(
+        # Combine all pipelines
+        pipeline_4 = FeatureUnion(
             [
                 ("pipeline_1", pipeline_1),
                 ("pipeline_2", pipeline_2),
@@ -388,14 +475,17 @@ class ModelOperations:
             ]
         )
 
-        feature_selector = SelectKBest(score_func=f_classif, k=n_features)
+        # Create the final pipeline
+        select_important_features = FunctionTransformer(self.select_important_features)
+        print_shape = FunctionTransformer(self.print_shape)
 
-        pipeline_4 = Pipeline(
+        pipeline_5 = Pipeline(
             steps=[
-                ("combined_features", combined_features),
-                ("feature_selector", feature_selector),
-                ("model", model),
+                ("pipeline_4", pipeline_4),
+                ("select_important_features", select_important_features),
+                ("print_shape", print_shape),
+                ("classifier", model),
             ]
         )
 
-        return pipeline_4
+        return pipeline_5
