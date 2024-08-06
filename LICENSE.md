@@ -10,14 +10,14 @@ revocable license to use the Content for personal, non-commercial purposes only.
 2. Permitted Uses
 Licensee may:
 
-Use the Content for personal projects and educational purposes.
-Modify the Content for personal use, provided that the modifications are not
+    Use the Content for personal projects and educational purposes.
+    Modify the Content for personal use, provided that the modifications are not
 distributed or shared with others.
 
 3. Restrictions
 Licensee may not:
 
-Use the Content for any commercial purpose without the prior written consent of
+    Use the Content for any commercial purpose without the prior written consent of
 Licensor. Distribute, sublicense, rent, lease, or sell the Content or any
 modifications thereof. Use the Content in any manner that violates any
 applicable laws or regulations.
