@@ -1,21 +1,57 @@
-MIT License
+Personal Use License
+This Personal Use License ("License") sets forth the terms and conditions under
+which you ("Licensee") may use the content ("Content") in the repository.
 
-Copyright (c) 2024 [Reginald Jay Argamosa]
+1. License Grant
+Subject to the terms and conditions of this License, Reginald Jay L. Argamosa
+and ISPRS TC V ("Licensor") grant Licensee a non-exclusive, non-transferable,
+revocable license to use the Content for personal, non-commercial purposes only.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+2. Permitted Uses
+Licensee may:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Use the Content for personal projects and educational purposes.
+Modify the Content for personal use, provided that the modifications are not
+distributed or shared with others.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+3. Restrictions
+Licensee may not:
+
+Use the Content for any commercial purpose without the prior written consent of
+Licensor. Distribute, sublicense, rent, lease, or sell the Content or any
+modifications thereof. Use the Content in any manner that violates any
+applicable laws or regulations.
+
+4. Ownership
+The Content is and shall remain the exclusive property of Reginald Jay L.
+Argamosa and ISPRS TC V. This License does not 
+convey to Licensee any rights of ownership in or to the Content.
+
+5. Disclaimer of Warranties
+THE CONTENT IS PROVIDED "AS IS" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+LICENSOR DOES NOT WARRANT THAT THE CONTENT WILL BE 
+ERROR-FREE OR THAT IT WILL MEET LICENSEE'S REQUIREMENTS.
+
+6. Limitation of Liability
+IN NO EVENT SHALL LICENSOR BE LIABLE FOR ANY DAMAGES WHATSOEVER, INCLUDING BUT
+NOT LIMITED TO DIRECT, INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR
+EXEMPLARY DAMAGES, ARISING OUT OF OR IN CONNECTION WITH THE USE OF OR INABILITY
+TO USE THE CONTENT, EVEN IF ADVISED OF THE 
+POSSIBILITY OF SUCH DAMAGES.
+
+7. Termination
+This License is effective until terminated. Licensor may terminate this License
+at any time for any reason. Upon termination, Licensee must cease all use of the
+Content and destroy all copies of the Content 
+in Licensee's possession or control.
+
+8. Governing Law
+This License shall be governed by and construed in accordance with the laws of
+the Philippines, without regard to its conflict of laws principles.
+
+9. Entire Agreement
+This License constitutes the entire agreement between the parties with respect
+to the use of the Content and supersedes all prior or contemporaneous
+understandings regarding such subject matter.

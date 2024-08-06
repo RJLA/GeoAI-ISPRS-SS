@@ -1,7 +1,7 @@
 # Overview
 ![Overview](isprs-tc5.jpg)
 
-![License: MIT](https://img.shields.io/badge/license-MIT-green)
+![License: Personal Use](https://img.shields.io/badge/license-Personal_Use-blue)
 ![Python Version](https://img.shields.io/badge/python-3.11-blue)
 ![Black](https://img.shields.io/badge/code%20style-black-000000.svg)
 ![ISPRS](https://img.shields.io/badge/isprs-tcv-blue)
@@ -93,7 +93,7 @@ Repository for the ISPRS Summer School TC V, focusing on applying machine learni
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/RJLA/GeoAI-ISPRS-SS/blob/main/LICENSE.md) file for details.
+This project is licensed under the Personal Use License - see the [LICENSE](https://github.com/RJLA/GeoAI-ISPRS-SS/blob/main/LICENSE.md) file for details.
 
 ## Contact
 
