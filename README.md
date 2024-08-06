@@ -10,7 +10,7 @@
 
 [![Website](https://img.shields.io/badge/isprs.org/tc5-symposium2024-2ea44f?style=for-the-badge)](https://www.isprs.org/tc5-symposium2024/index.html)
 
-## ISPRS-TC-V GeoAI Summer School
+## ISPRS-TC-V GeoAI Summer School (Day 2)
 
 Repository for the ISPRS Summer School TC V, focusing on applying machine learning to remote sensing datasets. Participants will gain hands-on experience in preprocessing, analyzing, and modeling remote sensing data using various machine learning techniques.
 
