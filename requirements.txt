@@ -9,3 +9,9 @@ shapely
 ydata-profiling
 ipywidgets
 catboost
+torch
+torchvision
+patchify
+segmentation-models-pytorch
+opencv-python
+torchmetrics
