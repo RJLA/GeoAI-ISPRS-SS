@@ -14,4 +14,12 @@ raster_files/*.tif
 !raster_files/
 !csv_files/
 csv_files/*.csv
+semantic_segmentation/data/
+semantic_segmentation/test/
+semantic_segmentation/train/
+semantic_segmentation/val/
+semantic_segmentation/trained_models/
+!semantic_segmentation/figures/
+trained_models/se_resnext50_32x4d-a260b3a4.pth
+
 
