@@ -586,7 +586,7 @@ class VisualizeOperations:
         df = pd.concat([X_train, y_train.reset_index(drop=True)], axis=1)
         classes = y_train.iloc[:, 0].unique()
         num_classes = len(classes)
-        colors = plt.cm.get_cmap("viridis", num_classes)
+        colors = plt.get_cmap("viridis", num_classes)
 
         plt.figure(figsize=self.figure_size)
 
